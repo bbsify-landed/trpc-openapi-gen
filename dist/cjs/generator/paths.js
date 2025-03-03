@@ -19,7 +19,7 @@ const getOpenApiPathsObject = (appRouter, securitySchemeNames) => {
     const pathsObject = {};
     const procedures = Object.assign({}, appRouter._def.procedures);
     (0, utils_1.forEachOpenApiProcedure)(procedures, ({ path: procedurePath, type, procedure, openapi }) => {
-        var _a, _b, _c, _d, _e;
+        var _a, _b, _c, _d, _e, _f;
         const procedureName = `${type}.${procedurePath}`;
         try {
             if (type === 'subscription') {
@@ -61,37 +61,36 @@ const getOpenApiPathsObject = (appRouter, securitySchemeNames) => {
                 });
             }
             const { inputParser, outputParser } = (0, utils_1.getInputOutputParsers)(procedure);
-            if (!(0, utils_1.instanceofZodType)(inputParser)) {
+            if (inputParser && !(0, utils_1.instanceofZodType)(inputParser)) {
                 throw new server_1.TRPCError({
                     message: 'Input parser expects a Zod validator',
                     code: 'INTERNAL_SERVER_ERROR',
                 });
             }
-            if (!(0, utils_1.instanceofZodType)(outputParser)) {
+            if (outputParser && !(0, utils_1.instanceofZodType)(outputParser)) {
                 throw new server_1.TRPCError({
                     message: 'Output parser expects a Zod validator',
                     code: 'INTERNAL_SERVER_ERROR',
                 });
             }
-            const isInputRequired = !inputParser.isOptional();
-            const o = (_c = inputParser === null || inputParser === void 0 ? void 0 : inputParser._def.zodOpenApi) === null || _c === void 0 ? void 0 : _c.openapi;
-            const inputSchema = (0, utils_1.unwrapZodType)(inputParser, true).openapi(Object.assign(Object.assign({}, ((o === null || o === void 0 ? void 0 : o.title) ? { title: o === null || o === void 0 ? void 0 : o.title } : {})), ((o === null || o === void 0 ? void 0 : o.description) ? { description: o === null || o === void 0 ? void 0 : o.description } : {})));
+            const isInputRequired = !((_c = inputParser === null || inputParser === void 0 ? void 0 : inputParser.isOptional()) !== null && _c !== void 0 ? _c : true);
+            const o = (_d = inputParser === null || inputParser === void 0 ? void 0 : inputParser._def.zodOpenApi) === null || _d === void 0 ? void 0 : _d.openapi;
+            const inputSchema = inputParser === undefined
+                ? zod_1.z.void()
+                : (0, utils_1.unwrapZodType)(inputParser, true).openapi(Object.assign(Object.assign({}, ((o === null || o === void 0 ? void 0 : o.title) ? { title: o === null || o === void 0 ? void 0 : o.title } : {})), ((o === null || o === void 0 ? void 0 : o.description) ? { description: o === null || o === void 0 ? void 0 : o.description } : {})));
             const requestData = {};
             if (!(pathParameters.length === 0 && (0, utils_1.instanceofZodTypeLikeVoid)(inputSchema))) {
                 if (!(0, utils_1.instanceofZodTypeObject)(inputSchema)) {
-                    throw new server_1.TRPCError({
-                        message: 'Input parser must be a ZodObject',
-                        code: 'INTERNAL_SERVER_ERROR',
-                    });
+                    // do nothing
                 }
-                if ((0, utils_1.acceptsRequestBody)(method)) {
+                else if ((0, utils_1.acceptsRequestBody)(method)) {
                     requestData.requestBody = (0, schema_1.getRequestBodyObject)(inputSchema, isInputRequired, pathParameters, contentTypes);
                     requestData.requestParams =
-                        (_d = (0, schema_1.getParameterObjects)(inputSchema, isInputRequired, pathParameters, requestHeaders, 'path')) !== null && _d !== void 0 ? _d : {};
+                        (_e = (0, schema_1.getParameterObjects)(inputSchema, isInputRequired, pathParameters, requestHeaders, 'path')) !== null && _e !== void 0 ? _e : {};
                 }
                 else {
                     requestData.requestParams =
-                        (_e = (0, schema_1.getParameterObjects)(inputSchema, isInputRequired, pathParameters, requestHeaders, 'all')) !== null && _e !== void 0 ? _e : {};
+                        (_f = (0, schema_1.getParameterObjects)(inputSchema, isInputRequired, pathParameters, requestHeaders, 'all')) !== null && _f !== void 0 ? _f : {};
                 }
             }
             const responses = (0, schema_1.getResponsesObject)(outputParser, httpMethod, responseHeaders, protect, (0, schema_1.hasInputs)(inputParser), successDescription, errorResponses);

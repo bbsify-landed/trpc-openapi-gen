@@ -98,24 +98,27 @@ export const getOpenApiPathsObject = (
 
       const { inputParser, outputParser } = getInputOutputParsers(procedure);
 
-      if (!instanceofZodType(inputParser)) {
+      if (inputParser && !instanceofZodType(inputParser)) {
         throw new TRPCError({
           message: 'Input parser expects a Zod validator',
           code: 'INTERNAL_SERVER_ERROR',
         });
       }
-      if (!instanceofZodType(outputParser)) {
+      if (outputParser && !instanceofZodType(outputParser)) {
         throw new TRPCError({
           message: 'Output parser expects a Zod validator',
           code: 'INTERNAL_SERVER_ERROR',
         });
       }
-      const isInputRequired = !inputParser.isOptional();
+      const isInputRequired = !(inputParser?.isOptional() ?? true);
       const o = inputParser?._def.zodOpenApi?.openapi;
-      const inputSchema = unwrapZodType(inputParser, true).openapi({
-        ...(o?.title ? { title: o?.title } : {}),
-        ...(o?.description ? { description: o?.description } : {}),
-      });
+      const inputSchema =
+        inputParser === undefined
+          ? z.void()
+          : unwrapZodType(inputParser, true).openapi({
+              ...(o?.title ? { title: o?.title } : {}),
+              ...(o?.description ? { description: o?.description } : {}),
+            });
 
       const requestData: {
         requestBody?: ZodOpenApiRequestBodyObject;
@@ -123,13 +126,8 @@ export const getOpenApiPathsObject = (
       } = {};
       if (!(pathParameters.length === 0 && instanceofZodTypeLikeVoid(inputSchema))) {
         if (!instanceofZodTypeObject(inputSchema)) {
-          throw new TRPCError({
-            message: 'Input parser must be a ZodObject',
-            code: 'INTERNAL_SERVER_ERROR',
-          });
-        }
-
-        if (acceptsRequestBody(method)) {
+          // do nothing
+        } else if (acceptsRequestBody(method)) {
           requestData.requestBody = getRequestBodyObject(
             inputSchema,
             isInputRequired,

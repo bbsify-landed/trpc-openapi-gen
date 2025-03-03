@@ -11,5 +11,5 @@ export declare const errorResponseObject: (code?: TRPCError["code"], message?: s
 }[]) => ZodOpenApiResponseObject;
 export declare const errorResponseFromStatusCode: (status: number) => ZodOpenApiResponseObject;
 export declare const errorResponseFromMessage: (status: number, message: string) => ZodOpenApiResponseObject;
-export declare const getResponsesObject: (schema: ZodTypeAny, httpMethod: HttpMethods, headers: AnyZodObject | undefined, isProtected: boolean, hasInputs: boolean, successDescription?: string, errorResponses?: number[] | Record<number, string>) => ZodOpenApiResponsesObject;
+export declare const getResponsesObject: (schema: ZodTypeAny | undefined, httpMethod: HttpMethods, headers: AnyZodObject | undefined, isProtected: boolean, hasInputs: boolean, successDescription?: string, errorResponses?: number[] | Record<number, string>) => ZodOpenApiResponsesObject;
 //# sourceMappingURL=schema.d.ts.map

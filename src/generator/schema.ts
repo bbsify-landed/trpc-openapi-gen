@@ -203,7 +203,7 @@ export const errorResponseFromMessage = (status: number, message: string) =>
   errorResponseObject(HTTP_STATUS_TRPC_ERROR_CODE[status], message);
 
 export const getResponsesObject = (
-  schema: ZodTypeAny,
+  schema: ZodTypeAny | undefined = z.void(),
   httpMethod: HttpMethods,
   headers: AnyZodObject | undefined,
   isProtected: boolean,
@@ -219,9 +219,9 @@ export const getResponsesObject = (
         schema: instanceofZodTypeKind(schema, z.ZodFirstPartyTypeKind.ZodVoid)
           ? {}
           : instanceofZodTypeKind(schema, z.ZodFirstPartyTypeKind.ZodNever) ||
-            instanceofZodTypeKind(schema, z.ZodFirstPartyTypeKind.ZodUndefined)
-          ? { not: {} }
-          : schema,
+              instanceofZodTypeKind(schema, z.ZodFirstPartyTypeKind.ZodUndefined)
+            ? { not: {} }
+            : schema,
       },
     },
   },

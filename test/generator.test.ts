@@ -61,60 +61,6 @@ describe('generator', () => {
     `);
   });
 
-  test('with missing input', () => {
-    {
-      const appRouter = t.router({
-        noInput: t.procedure
-          .meta({ openapi: { method: 'GET', path: '/no-input' } })
-          .output(z.object({ name: z.string() }))
-          .query(() => ({ name: 'mcampa' })),
-      });
-
-      expect(() => {
-        generateOpenApiDocument(appRouter, defaultDocOpts);
-      }).toThrowError('[query.noInput] - Input parser expects a Zod validator');
-    }
-    {
-      const appRouter = t.router({
-        noInput: t.procedure
-          .meta({ openapi: { method: 'POST', path: '/no-input' } })
-          .output(z.object({ name: z.string() }))
-          .mutation(() => ({ name: 'mcampa' })),
-      });
-
-      expect(() => {
-        generateOpenApiDocument(appRouter, defaultDocOpts);
-      }).toThrowError('[mutation.noInput] - Input parser expects a Zod validator');
-    }
-  });
-
-  test('with missing output', () => {
-    {
-      const appRouter = t.router({
-        noOutput: t.procedure
-          .meta({ openapi: { method: 'GET', path: '/no-output' } })
-          .input(z.object({ name: z.string() }))
-          .query(({ input }) => ({ name: input.name })),
-      });
-
-      expect(() => {
-        generateOpenApiDocument(appRouter, defaultDocOpts);
-      }).toThrowError('[query.noOutput] - Output parser expects a Zod validator');
-    }
-    {
-      const appRouter = t.router({
-        noOutput: t.procedure
-          .meta({ openapi: { method: 'POST', path: '/no-output' } })
-          .input(z.object({ name: z.string() }))
-          .mutation(({ input }) => ({ name: input.name })),
-      });
-
-      expect(() => {
-        generateOpenApiDocument(appRouter, defaultDocOpts);
-      }).toThrowError('[mutation.noOutput] - Output parser expects a Zod validator');
-    }
-  });
-
   test('with non-zod parser', () => {
     {
       const appRouter = t.router({
@@ -141,35 +87,6 @@ describe('generator', () => {
       expect(() => {
         generateOpenApiDocument(appRouter, defaultDocOpts);
       }).toThrowError('[query.badInput] - Output parser expects a Zod validator');
-    }
-  });
-
-  test('with non-object input', () => {
-    {
-      const appRouter = t.router({
-        badInput: t.procedure
-          .meta({ openapi: { method: 'GET', path: '/bad-input' } })
-          .input(z.string())
-          .output(z.null())
-          .query(() => null),
-      });
-
-      expect(() => {
-        generateOpenApiDocument(appRouter, defaultDocOpts);
-      }).toThrowError('[query.badInput] - Input parser must be a ZodObject');
-    }
-    {
-      const appRouter = t.router({
-        badInput: t.procedure
-          .meta({ openapi: { method: 'POST', path: '/bad-input' } })
-          .input(z.string())
-          .output(z.null())
-          .mutation(() => null),
-      });
-
-      expect(() => {
-        generateOpenApiDocument(appRouter, defaultDocOpts);
-      }).toThrowError('[mutation.badInput] - Input parser must be a ZodObject');
     }
   });
 
@@ -301,20 +218,6 @@ describe('generator', () => {
     expect(() => {
       generateOpenApiDocument(appRouter, defaultDocOpts);
     }).toThrowError('[subscription.currentName] - Subscriptions are not supported by OpenAPI v3');
-  });
-
-  test('with void and path parameters', () => {
-    const appRouter = t.router({
-      pathParameters: t.procedure
-        .meta({ openapi: { method: 'GET', path: '/path-parameters/{name}' } })
-        .input(z.void())
-        .output(z.object({ name: z.string() }))
-        .query(() => ({ name: 'asdf' })),
-    });
-
-    expect(() => {
-      generateOpenApiDocument(appRouter, defaultDocOpts);
-    }).toThrowError('[query.pathParameters] - Input parser must be a ZodObject');
   });
 
   test('with optional path parameters', () => {

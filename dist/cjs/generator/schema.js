@@ -150,7 +150,7 @@ const errorResponseFromStatusCode = (status) => {
 exports.errorResponseFromStatusCode = errorResponseFromStatusCode;
 const errorResponseFromMessage = (status, message) => (0, exports.errorResponseObject)(adapters_1.HTTP_STATUS_TRPC_ERROR_CODE[status], message);
 exports.errorResponseFromMessage = errorResponseFromMessage;
-const getResponsesObject = (schema, httpMethod, headers, isProtected, hasInputs, successDescription, errorResponses) => (Object.assign({ 200: {
+const getResponsesObject = (schema = zod_1.z.void(), httpMethod, headers, isProtected, hasInputs, successDescription, errorResponses) => (Object.assign({ 200: {
         description: successDescription !== null && successDescription !== void 0 ? successDescription : 'Successful response',
         headers: headers,
         content: {

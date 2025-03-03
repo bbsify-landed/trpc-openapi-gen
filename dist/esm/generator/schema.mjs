@@ -142,7 +142,7 @@ export const errorResponseFromStatusCode = (status) => {
     return errorResponseObject(code, message ?? 'Unknown error');
 };
 export const errorResponseFromMessage = (status, message) => errorResponseObject(HTTP_STATUS_TRPC_ERROR_CODE[status], message);
-export const getResponsesObject = (schema, httpMethod, headers, isProtected, hasInputs, successDescription, errorResponses) => ({
+export const getResponsesObject = (schema = z.void(), httpMethod, headers, isProtected, hasInputs, successDescription, errorResponses) => ({
     200: {
         description: successDescription ?? 'Successful response',
         headers: headers,

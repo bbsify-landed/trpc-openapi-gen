@@ -45,32 +45,6 @@ describe('fetch adapter', () => {
     clearMocks();
   });
 
-  // Please note: validating router does not happen in `production`.
-  test('with invalid router', async () => {
-    const appRouter = t.router({
-      invalidRoute: t.procedure
-        .meta({ openapi: { method: 'GET', path: '/invalid-route' } })
-        .input(z.void())
-        .query(({ input }) => input),
-    });
-
-    const req = new Request('https://localhost:3000/invalid-route', {
-      method: 'GET',
-    });
-    try {
-      await createFetchHandlerCaller({
-        router: appRouter,
-        endpoint: '/',
-        req,
-      });
-    } catch (err) {
-      const error = err as TRPCError;
-      expect(error).toBeInstanceOf(TRPCError);
-      expect(error.code).toBe('INTERNAL_SERVER_ERROR');
-      expect(error.message).toBe('[query.invalidRoute] - Output parser expects a Zod validator');
-    }
-  });
-
   test('with not found path', async () => {
     const appRouter = t.router({
       ping: t.procedure
