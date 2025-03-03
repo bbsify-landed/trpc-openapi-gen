@@ -61,7 +61,7 @@ export const getOpenApiPathsObject = (
         protect = true,
       } = openapi;
 
-      const path = normalizePath(openapi.path);
+      const path = normalizePath(openapi.path || procedurePath);
       const pathParameters = getPathParameters(path);
 
       const httpMethod = HttpMethods[method];
