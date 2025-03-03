@@ -1,5 +1,5 @@
 import { OpenApiMethod, OpenApiProcedure, OpenApiRouter } from '../../types';
-import { getPathRegExp, normalizePath, forEachOpenApiProcedure } from '../../utils';
+import { forEachOpenApiProcedure, getPathRegExp, normalizePath } from '../../utils';
 
 export const createProcedureCache = (router: OpenApiRouter) => {
   const procedureCache = new Map<
@@ -22,7 +22,7 @@ export const createProcedureCache = (router: OpenApiRouter) => {
     if (!procedureCache.has(method)) {
       procedureCache.set(method, new Map());
     }
-    const path = normalizePath(openapi.path);
+    const path = normalizePath(openapi.path || queryPath);
     const pathRegExp = getPathRegExp(path);
     procedureCache.get(method)?.set(pathRegExp, {
       type: procedure._def.type,

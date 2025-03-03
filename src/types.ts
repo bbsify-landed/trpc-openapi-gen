@@ -24,7 +24,7 @@ export type OpenApiMeta<TMeta = TRPCMeta> = TMeta & {
   openapi?: {
     enabled?: boolean;
     method: OpenApiMethod;
-    path: `/${string}`;
+    path?: `/${string}`;
     summary?: string;
     description?: string;
     protect?: boolean;
