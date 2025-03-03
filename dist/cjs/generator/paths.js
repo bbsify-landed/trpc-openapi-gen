@@ -28,7 +28,16 @@ const getOpenApiPathsObject = (appRouter, securitySchemeNames) => {
                     code: 'INTERNAL_SERVER_ERROR',
                 });
             }
-            const { method, summary, description, tags, requestHeaders, responseHeaders, successDescription, errorResponses, protect = true, } = openapi;
+            const { method: oMethod, summary, description, tags, requestHeaders, responseHeaders, successDescription, errorResponses, protect = true, } = openapi;
+            const method = (() => {
+                if (oMethod)
+                    return oMethod;
+                if (type === 'query')
+                    return 'GET';
+                if (type === 'mutation')
+                    return 'POST';
+                return 'POST';
+            })();
             const path = (0, utils_1.normalizePath)(openapi.path || procedurePath);
             const pathParameters = (0, utils_1.getPathParameters)(path);
             const httpMethod = HttpMethods[method];

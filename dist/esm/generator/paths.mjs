@@ -1,7 +1,7 @@
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 import { extendZodWithOpenApi, } from 'zod-openapi';
-import { acceptsRequestBody, getPathParameters, normalizePath, forEachOpenApiProcedure, getInputOutputParsers, instanceofZodType, instanceofZodTypeLikeVoid, instanceofZodTypeObject, unwrapZodType, } from '../utils/index.mjs';
+import { acceptsRequestBody, forEachOpenApiProcedure, getInputOutputParsers, getPathParameters, instanceofZodType, instanceofZodTypeLikeVoid, instanceofZodTypeObject, normalizePath, unwrapZodType, } from '../utils/index.mjs';
 import { getParameterObjects, getRequestBodyObject, getResponsesObject, hasInputs } from './schema.mjs';
 extendZodWithOpenApi(z);
 export var HttpMethods;
@@ -24,7 +24,16 @@ export const getOpenApiPathsObject = (appRouter, securitySchemeNames) => {
                     code: 'INTERNAL_SERVER_ERROR',
                 });
             }
-            const { method, summary, description, tags, requestHeaders, responseHeaders, successDescription, errorResponses, protect = true, } = openapi;
+            const { method: oMethod, summary, description, tags, requestHeaders, responseHeaders, successDescription, errorResponses, protect = true, } = openapi;
+            const method = (() => {
+                if (oMethod)
+                    return oMethod;
+                if (type === 'query')
+                    return 'GET';
+                if (type === 'mutation')
+                    return 'POST';
+                return 'POST';
+            })();
             const path = normalizePath(openapi.path || procedurePath);
             const pathParameters = getPathParameters(path);
             const httpMethod = HttpMethods[method];

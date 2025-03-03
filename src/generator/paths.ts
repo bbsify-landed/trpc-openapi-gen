@@ -10,13 +10,13 @@ import {
 import { OpenApiRouter } from '../types';
 import {
   acceptsRequestBody,
-  getPathParameters,
-  normalizePath,
   forEachOpenApiProcedure,
   getInputOutputParsers,
+  getPathParameters,
   instanceofZodType,
   instanceofZodTypeLikeVoid,
   instanceofZodTypeObject,
+  normalizePath,
   unwrapZodType,
 } from '../utils';
 import { getParameterObjects, getRequestBodyObject, getResponsesObject, hasInputs } from './schema';
@@ -50,7 +50,7 @@ export const getOpenApiPathsObject = (
       }
 
       const {
-        method,
+        method: oMethod,
         summary,
         description,
         tags,
@@ -60,6 +60,15 @@ export const getOpenApiPathsObject = (
         errorResponses,
         protect = true,
       } = openapi;
+
+      const method = (() => {
+        if (oMethod) return oMethod;
+
+        if (type === 'query') return 'GET';
+        if (type === 'mutation') return 'POST';
+
+        return 'POST';
+      })();
 
       const path = normalizePath(openapi.path || procedurePath);
       const pathParameters = getPathParameters(path);

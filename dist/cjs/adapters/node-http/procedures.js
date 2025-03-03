@@ -9,7 +9,16 @@ const createProcedureCache = (router) => {
         if (procedure._def.type === 'subscription') {
             return;
         }
-        const { method } = openapi;
+        const { method: oMethod } = openapi;
+        const method = (() => {
+            if (oMethod)
+                return oMethod;
+            if (procedure._def.type === 'query')
+                return 'GET';
+            if (procedure._def.type === 'mutation')
+                return 'POST';
+            return 'POST';
+        })();
         if (!procedureCache.has(method)) {
             procedureCache.set(method, new Map());
         }

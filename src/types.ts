@@ -23,7 +23,7 @@ export type OpenApiContentType =
 export type OpenApiMeta<TMeta = TRPCMeta> = TMeta & {
   openapi?: {
     enabled?: boolean;
-    method: OpenApiMethod;
+    method?: OpenApiMethod;
     path?: `/${string}`;
     summary?: string;
     description?: string;
