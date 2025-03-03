@@ -1,8 +1,8 @@
 {
-  "name": "trpc-to-openapi",
+  "name": "@bbsify-landed/trpc-openapi-gen",
   "version": "2.1.3",
   "description": "tRPC OpenAPI",
-  "author": "mcampa",
+  "author": "bleepbloopsify",
   "private": false,
   "license": "MIT",
   "keywords": [
